@@ -1,5 +1,9 @@
 # Práctica 2 de la asignatura de Programación Concurrente desarrollada en Java en el curso 2019/20
 
+Esta práctica ha sido desarrollada por:
+Agustín López -> github.com/agustinlopezg
+Guillermo de Azcárate Costa -> github.com/guilleazca98
+
 Al principio, y para entender más el código que íbamos desarrollando, lo hemos hecho con variables de sincronización con espera activa y simulando los clásicos problemas vistos en las clases de teoría de “Productor-Consumidor” y “Cliente-Servidor” ya que se comunican entre sí mediante peticiones. 
 
 La clase principal Personal consta de varios métodos y muchas variables.
