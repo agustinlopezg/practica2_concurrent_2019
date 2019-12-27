@@ -1,6 +1,7 @@
 # Práctica 2 de la asignatura de Programación Concurrente desarrollada en Java en el curso 2019/20
 
 Esta práctica ha sido desarrollada por:
+
 Agustín López -> github.com/agustinlopezg
 
 Guillermo de Azcárate Costa -> github.com/guilleazca98
