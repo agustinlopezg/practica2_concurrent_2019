@@ -1,8 +1,6 @@
- 
-import java.util.ArrayList;
+ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.concurrent.CyclicBarrier;
 import java.util.concurrent.Semaphore;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
@@ -19,7 +17,7 @@ public class Personal {
 	static final int N_PEDIDOS_PARA_LIMPIAR_PLAYAS = 20;
 	static final int MAX_PRIORITY = 10;
 	
-	//(24/CONVERSIÓN_TIEMPO) SERÁ EL TIEMPO REAL DE DURACIÓN DEL PROGRAMA (EN MINUTOS)
+	//(24/CONVERSIÓN_TIEMPO) SERÁ EL TIEMPO REAL DE DURACIÓN DEL PROGRAMA (EN SEGUNDOS)
 	static final int CONVERSION_TIEMPO = 2;
 	
 	volatile static int n_empleados = 0;
@@ -61,27 +59,6 @@ public class Personal {
 	static Semaphore sem_empezar_jornada = new Semaphore(0);
 	static Semaphore sem_pedido_erroneo = new Semaphore(0);
 	static Semaphore sem_limpiar_playaConcreta = new Semaphore(0);
-	/*public Personal() {
-		productosDisponibles.add(new Producto("Telefono Movil", "Telefonia"));
-		productosDisponibles.add(new Producto("PS4", "Entretenimiento"));
-		productosDisponibles.add(new Producto("Camisa", "Ropa"));
-		productosDisponibles.add(new Producto("Mesa", "Inmobiliario"));
-		
-		productosEnRebajas.add(new Producto("Sudadera", "Ropa"));
-		productosEnRebajas.add(new Producto("Ordenador", "Tecnologia"));
-		productosEnRebajas.add(new Producto("Silla", "Inmobiliario"));
-		productosEnRebajas.add(new Producto("Congelador", "Inmobiliario"));
-		
-		productosNovedosos.add(new Producto("Cargador", "Tecnologia"));
-		productosNovedosos.add(new Producto("Tablet", "Tecnologia"));
-		productosNovedosos.add(new Producto("Cuadro", "Decoracion"));
-		productosNovedosos.add(new Producto("Cuaderno", "Colegio"));
-		
-		productosAgotados.add(new Producto("Camiseta", "Ropa"));
-		productosAgotados.add(new Producto("Mesa", "Inmobiliario"));
-		productosAgotados.add(new Producto("Ordenador", "Tecnologia"));
-		productosAgotados.add(new Producto("Lampara", "Decoracion"));
-	}*/
 	
 	public static void cliente(int idCliente) {
 		while(true) {
@@ -116,11 +93,10 @@ public class Personal {
 							break;		
 				}
 				
-				//System.out.println("Tamaño " + almacen_pedidos.size());
 				System.out.println("El cliente " + idCliente + " acaba de realizar el pedido nº " + 
 				p.getIdPedido() + " y se va a buscar los artículos para realizar el siguiente pedido");
 				sem_pedidos_realizados.release();
-				//Se duerme un tiempo aleatorio
+				//Se duerme un tiempo aleatorio dependiendo del pedido realizado
 				Thread.sleep(1000 * (num_pedido + 1));
 			}catch(InterruptedException e) {
 				System.out.println("Lo siento, el cliente " + idCliente + " se tiene que esperar a la siguiente jornada para seguir realizando pedidos");
@@ -184,9 +160,10 @@ public class Personal {
 					pedido_recogido.unlock();
 				}
 				
-				//Hay que ponerle una condicion para que pare cuando llegue a...
 				System.out.println("Procesando pedido nº " + p.getIdPedido() + "...");
 				n_pedidosRealizados++;
+				
+				//SE DUERME UN TIEMPO DEPENDIENDO DE NÚMERO DE PRODUCTOS QUE TENGA EL PEDIDO
 				Thread.sleep(500 * p.getProductos().size());
 				System.out.println("Recogidos los productos " + p.getProductos().toString() + " del pedido nº " + p.getIdPedido() + " del almacén y llevados a la playa nº " + num_playa);
 			
@@ -271,16 +248,13 @@ public class Personal {
 				
 				switch(playa_concreta) {
 					case 1: 
-						playa1.clear();
-						System.out.println("El empleado de Limpieza " + nEmpleado + " ha limpiado la playa nº1");
+						System.out.println("El empleado de Limpieza " + nEmpleado + " ha limpiado la playa nº 1");
 						break;
 					case 2: 	
-						playa2.clear();
-						System.out.println("El empleado de Limpieza " + nEmpleado + " ha limpiado la playa nº2");
+						System.out.println("El empleado de Limpieza " + nEmpleado + " ha limpiado la playa nº 2");
 						break;
 					case 3:
-						playa3.clear();
-						System.out.println("El empleado de Limpieza " + nEmpleado + " ha limpiado la playa nº3");
+						System.out.println("El empleado de Limpieza " + nEmpleado + " ha limpiado la playa nº 3");
 						break;
 				}		
 				System.out.println("El empleado de Limpieza " + nEmpleado + " ha limpiado las playas");
@@ -294,7 +268,7 @@ public class Personal {
 	
 	public static void empleado_encargado(int nEmpleado) {
 		n_empleados++;
-		System.out.println("COMIENZA LA JORNADA DE TRABAJO !!!");
+		System.out.println("\nCOMIENZA LA JORNADA DE TRABAJO !!!\n");
 		sem_empezar_jornada.release(N_EMPLEADOS_ENCARGADO - 1 + N_EMPLEADOS_LIMPIEZA + 
 				N_EMPLEADOS_EMPAQUETAPEDIDOS + N_EMPLEADOS_RECOGEPEDIDOS + N_EMPLEADOS_ADMINISTRATIVO);
 	    
@@ -305,7 +279,7 @@ public class Personal {
 			n_empleados--;
 		}
 		
-		System.out.println("SE ACABÓ LA JORNADA !!!");
+		System.out.println("\nSE ACABÓ LA JORNADA !!!\n");
 		
 		for(Thread t : lista_hilos) {
 			t.interrupt();
@@ -313,7 +287,7 @@ public class Personal {
 	    
 	    //Finalmente, es el último empleado que termina de ejecutarse
 		try {
-			Thread.sleep(1000); //Simula la duración de la jornada de trabajo
+			Thread.sleep(1000); //PARA ASEGURARSE QUE ES EL ÚLTIMO QUE SALE DEL ALMACÉN
 		} catch (InterruptedException e) {
 			System.out.println("El empleado Encargado " + nEmpleado + " se va a casa");
 			n_empleados--;
@@ -322,7 +296,7 @@ public class Personal {
 		n_empleados--;
 	}
 
-	private void exec() {
+	public void exec() {
 		
 		productosDisponibles.add(new Producto("Telefono Movil", "Telefonia"));
 		productosDisponibles.add(new Producto("PS4", "Entretenimiento"));
@@ -330,19 +304,13 @@ public class Personal {
 		productosDisponibles.add(new Producto("Mesa", "Inmobiliario"));
 		
 		productosEnRebajas.add(new Producto("Sudadera", "Ropa"));
-		productosEnRebajas.add(new Producto("Ordenador", "Tecnologia"));
-		productosEnRebajas.add(new Producto("Silla", "Inmobiliario"));
-		productosEnRebajas.add(new Producto("Congelador", "Inmobiliario"));
 		
 		productosNovedosos.add(new Producto("Cargador", "Tecnologia"));
 		productosNovedosos.add(new Producto("Tablet", "Tecnologia"));
 		productosNovedosos.add(new Producto("Cuadro", "Decoracion"));
-		productosNovedosos.add(new Producto("Cuaderno", "Colegio"));
 		
 		productosAgotados.add(new Producto("Camiseta", "Ropa"));
 		productosAgotados.add(new Producto("Mesa", "Inmobiliario"));
-		productosAgotados.add(new Producto("Ordenador", "Tecnologia"));
-		productosAgotados.add(new Producto("Lampara", "Decoracion"));
 		
 		for(int i=0; i<N_CLIENTES; i++) {
 			int a = i;
@@ -384,10 +352,5 @@ public class Personal {
 			new Thread( ()->empleado_encargado(a + 1)).start();
 		}
 	}
-	
-	public static void main(String[] args) {	
-		new Personal().exec();
-	}
-
 
 }
